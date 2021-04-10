@@ -88,3 +88,4 @@ func handleProfile(ctx iris.Context) {
 	id := ctx.Params().Get("id")
 	ctx.HTML(fmt.Sprintf("<h1>当前id: %s</h1>", id))
 }
+
