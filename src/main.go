@@ -18,6 +18,8 @@ func main() {
 	// 路由组 /student
 	mvc.Configure(app.Party("/student"), func(a *mvc.Application) {
 		a.Handle(new(controller.StudentController))
+		a.Handle(new(controller.CourseController))
+		a.Handle(new(controller.TeacherController))
 	})
 
 	// 捕获 404 错误
@@ -32,6 +34,7 @@ func main() {
 func notFoundHandler(ctx iris.Context) {
 	path := ctx.Path()
 	fmt.Println("path:", path, "----> 404 not found ❌")
+	ctx.WriteString("404 not found")
 }
 
 func Cors(ctx iris.Context) {
