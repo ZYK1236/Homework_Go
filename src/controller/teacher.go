@@ -1,3 +1,11 @@
+/**
+  ******************************************************************************
+  * File Name          : 查询学生对应老师 Controller
+  * Author             : 张宇恺
+  * Description        : 根据传入的 stuno 去查对应的老师
+  ******************************************************************************
+*/
+
 package controller
 
 import (
@@ -18,6 +26,7 @@ type Teacher struct {
 }
 
 func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
+	// 数据初始化
 	stuno := ctx.URLParam("stuno")
 	if stuno == "" {
 		defer fmt.Println("path:/student/teacher ----> GET ✅")
@@ -30,6 +39,7 @@ func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
 
 	teacher := Teacher{}
 
+	// 执行 sql 语句
 	sql := "select stuno,stuname,teachername from student,teacher where student.teacherid=teacher.id and student.stuno=?;"
 	err := database.DB.Get(&teacher, sql, stuno)
 	if err != nil {
@@ -40,7 +50,7 @@ func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
 			Msg:  "stuno is not found",
 		}
 	}
-	defer fmt.Println("path:/student/Teacher ----> GET ✅")
+	defer fmt.Println("path:/student/teacher ----> GET ✅")
 
 	return model.ResponseModel{
 		Data:       teacher,

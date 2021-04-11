@@ -20,8 +20,13 @@ func main() {
 		a.Handle(new(controller.StudentController))
 		a.Handle(new(controller.CourseController))
 		a.Handle(new(controller.TeacherController))
+		a.Handle(new(controller.UploadController))
 	})
-
+	mvc.Configure(app.Party("/find"), func(a *mvc.Application) {
+		a.Handle(new(controller.FindCourseController))
+		a.Handle(new(controller.FindTeacherController))
+	})
+	
 	// 捕获 404 错误
 	app.OnErrorCode(iris.StatusNotFound, notFoundHandler)
 
