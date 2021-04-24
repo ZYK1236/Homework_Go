@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"iris/src/controller"
-	"iris/src/database"
-
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
+	"iris/src/controller"
+	"iris/src/database"
+	"iris/src/redis-config"
+	logMsg "iris/src/utils"
 )
 
 func main() {
@@ -22,24 +23,39 @@ func main() {
 		a.Handle(new(controller.TeacherController))
 		a.Handle(new(controller.UploadController))
 	})
+
+	// 路由组 /find
 	mvc.Configure(app.Party("/find"), func(a *mvc.Application) {
 		a.Handle(new(controller.FindCourseController))
 		a.Handle(new(controller.FindTeacherController))
 	})
-	
+
+	// 路由组 /record
+	mvc.Configure(app.Party("/record"), func(a *mvc.Application) {
+		a.Handle(new(controller.RecordController))
+	})
+
 	// 捕获 404 错误
 	app.OnErrorCode(iris.StatusNotFound, notFoundHandler)
 
 	// 初始化数据库
 	database.Init()
+	// 初始化 redis
+	redisConfig.Init()
 
-	app.Run(iris.Addr(":8080"))
+	err := app.Run(iris.Addr(":8080"))
+	if err != nil {
+		fmt.Println("app.Run error...")
+		return
+	}
 }
 
 func notFoundHandler(ctx iris.Context) {
-	path := ctx.Path()
-	fmt.Println("path:", path, "----> 404 not found ❌")
-	ctx.WriteString("404 not found")
+	logMsg.LogErrorMsg(ctx.Path(), ctx.Method())
+	_, err := ctx.WriteString("404 not found")
+	if err != nil {
+		fmt.Println("ctx.WriteString error")
+	}
 }
 
 func Cors(ctx iris.Context) {

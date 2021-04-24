@@ -1,24 +1,24 @@
 /**
-  ******************************************************************************
-  * File Name          : 查询学生对应老师 Controller
-  * Author             : 张宇恺
-  * Description        : 根据传入的 stuno 去查对应的老师
-  ******************************************************************************
-*/
+ ******************************************************************************
+ * File Name          : 查询学生对应老师 Controller
+ * Author             : 张宇恺
+ * Description        : 根据传入的 stuno 去查对应的老师
+ ******************************************************************************
+ */
 
 package controller
 
 import (
-	"fmt"
 	"iris/src/database"
 	"iris/src/model"
+	logMsg "iris/src/utils"
 
 	"github.com/kataras/iris/v12"
 )
 
 type TeacherController struct{}
 
-// 记住这里一定要与 mysql 中的字段一致！！！
+// Teacher 记住这里一定要与 mysql 中的字段一致！！！
 type Teacher struct {
 	StuNo       int    `json:"stuno"`
 	StuName     string `json:"stuname"`
@@ -28,8 +28,9 @@ type Teacher struct {
 func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
 	// 数据初始化
 	stuno := ctx.URLParam("stuno")
+	path := ctx.Path()
 	if stuno == "" {
-		defer fmt.Println("path:/student/teacher ----> GET ✅")
+		defer logMsg.LogSuccessMsg(path, "Get")
 		return model.ResponseModel{
 			Data: nil,
 			Code: 0,
@@ -43,14 +44,14 @@ func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
 	sql := "select stuno,stuname,teachername from student,teacher where student.teacherid=teacher.id and student.stuno=?;"
 	err := database.DB.Get(&teacher, sql, stuno)
 	if err != nil {
-		fmt.Println("database.DB.Get error, stuno is not found❌")
+		logMsg.LogErrorMsg(ctx.Path(), "database.DB.Get")
 		return model.ResponseModel{
 			Data: nil,
 			Code: 0,
 			Msg:  "stuno is not found",
 		}
 	}
-	defer fmt.Println("path:/student/teacher ----> GET ✅")
+	defer logMsg.LogSuccessMsg(path, "Get")
 
 	return model.ResponseModel{
 		Data:       teacher,

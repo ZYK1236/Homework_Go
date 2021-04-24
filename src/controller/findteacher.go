@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * File Name          : 查询所有老师 Controller
-  * Author             : 张宇恺
-  * Description        : 查表，给出表中所有老师 id 以及名字
-  ******************************************************************************
-*/
+ ******************************************************************************
+ * File Name          : 查询所有老师 Controller
+ * Author             : 张宇恺
+ * Description        : 查表，给出表中所有老师 id 以及名字
+ ******************************************************************************
+ */
 
 package controller
 
@@ -12,8 +12,6 @@ import (
 	"fmt"
 	"iris/src/database"
 	"iris/src/model"
-
-	"github.com/kataras/iris/v12"
 )
 
 type FindTeacherController struct{}
@@ -23,7 +21,7 @@ type FindTeacher struct {
 	TeacherName string `json:"teachername"`
 }
 
-func (fc *FindTeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
+func (fc *FindTeacherController) GetTeacher() model.ResponseModel {
 	result := []FindTeacher{}
 	sql := "select id, teachername from teacher;"
 	err := database.DB.Select(&result, sql)

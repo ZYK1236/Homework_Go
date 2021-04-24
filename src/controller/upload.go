@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"iris/src/database"
 	"iris/src/model"
+	logMsg "iris/src/utils"
 
 	"github.com/kataras/iris/v12"
 )
@@ -21,6 +22,7 @@ import (
 type UploadController struct{}
 
 func (uc *UploadController) PostUpload(ctx iris.Context) model.ResponseModel {
+	path := ctx.Path()
 	// 数据初始化工作
 	var stuno, sex, birthday, courseid, teacherid, stuname string
 	var stunoArray []string
@@ -74,7 +76,7 @@ func (uc *UploadController) PostUpload(ctx iris.Context) model.ResponseModel {
 			TotalCount: 0,
 		}
 	}
-	defer fmt.Println("path:/student/upload ----> POST ✅")
+	defer logMsg.LogSuccessMsg(path, "Post")
 
 	return model.ResponseModel{
 		Data:       res,

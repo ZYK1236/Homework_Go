@@ -29,11 +29,8 @@ func (fc *FindCourseController) GetCourse(ctx iris.Context) model.ResponseModel 
 	err := database.DB.Select(&result, sql)
 	if err != nil {
 		fmt.Print("database.DB.Select error 查找所有课程 id 失败 ❌", err.Error())
-		return model.ResponseModel{
-			Data: nil,
-			Code: 0,
-			Msg:  "查找所有课程 id 失败",
-		}
+		panic(err.Error())
+
 	}
 
 	defer fmt.Println("path:/find/course ----> GET ✅")

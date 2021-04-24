@@ -18,7 +18,7 @@ import (
 
 type CourseController struct{}
 
-// 记住这里一定要与 mysql 中的字段一致！！！
+// Course 记住这里一定要与 mysql 中的字段一致！！！
 type Course struct {
 	StuNo      int    `json:"stuno"`
 	StuName    string `json:"stuname"`

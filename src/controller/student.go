@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * File Name          : 查询学生对应信息
-  * Author             : 张宇恺
-  * Description        : 查表，给出所有学生的身份信息
-  ******************************************************************************
-*/
+ ******************************************************************************
+ * File Name          : 查询学生对应信息
+ * Author             : 张宇恺
+ * Description        : 查表，给出所有学生的身份信息
+ ******************************************************************************
+ */
 
 package controller
 
@@ -12,13 +12,14 @@ import (
 	"fmt"
 	"iris/src/database"
 	"iris/src/model"
+	logMsg "iris/src/utils"
 
 	"strconv"
 
 	"github.com/kataras/iris/v12"
 )
 
-// 标签千万不要空格！！ 5555
+// Student 标签千万不要空格！！ 5555
 type Student struct {
 	Id        int    `json:"id"`
 	Stuno     int    `json:"stuno"`
@@ -32,6 +33,7 @@ type Student struct {
 type StudentController struct{}
 
 func (sc *StudentController) GetMessage(ctx iris.Context) model.ResponseModel {
+	path := ctx.Path()
 	var beginId int
 
 	// get query param
@@ -44,21 +46,25 @@ func (sc *StudentController) GetMessage(ctx iris.Context) model.ResponseModel {
 	}
 
 	// defined sql
-	student := []Student{}
+	var student []Student
 	count := 0
 	selectSql := "select * from student where id>? and id<=?"
 	countSql := "select count(*) from student"
 
 	// exec sql
-	error := database.DB.Select(&student, selectSql, beginId, beginId+5)
-	error_count := database.DB.Get(&count, countSql)
+	err := database.DB.Select(&student, selectSql, beginId, beginId+5)
+	errorCount := database.DB.Get(&count, countSql)
 
-	if error != nil || error_count != nil {
+	if err != nil || errorCount != nil {
 		fmt.Println("database.DB.Select / Get error ❌")
-		panic(error.Error())
+		return model.ResponseModel{
+			Data: nil,
+			Code: 0,
+			Msg:  "error",
+		}
 	}
 
-	defer fmt.Println("path:/student/message ----> GET ✅")
+	defer logMsg.LogSuccessMsg(path, "Get")
 
 	result := model.ResponseModel{
 		Data:       student,
