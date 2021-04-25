@@ -1,8 +1,8 @@
 /**
  ******************************************************************************
- * File Name          : 查询学生对应老师 Controller
+ * File Name          : 查询当前网站访问人数
  * Author             : 张宇恺
- * Description        : 根据传入的 stuno 去查对应的老师
+ * Description        : 查 redis key = record
  ******************************************************************************
  */
 
@@ -11,6 +11,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
+	"github.com/kataras/iris/v12"
 	"iris/src/redis-config"
 )
 
@@ -44,4 +45,10 @@ func (rc *RecordController) Get() interface{} {
 
 		return record
 	}
+}
+
+func (rc *RecordController) Options(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "1")
 }

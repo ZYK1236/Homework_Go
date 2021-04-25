@@ -85,3 +85,9 @@ func (uc *UploadController) PostUpload(ctx iris.Context) model.ResponseModel {
 		TotalCount: 1,
 	}
 }
+
+func (uc *UploadController) OptionsUpload(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "3600")
+}

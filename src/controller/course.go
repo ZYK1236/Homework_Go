@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * File Name          : 查询学生对应课程 Controller
-  * Author             : 张宇恺
-  * Description        : 根据传入的 stuno 去查对应的课程
-  ******************************************************************************
-*/
+ ******************************************************************************
+ * File Name          : 查询学生对应课程 Controller
+ * Author             : 张宇恺
+ * Description        : 根据传入的 stuno 去查对应的课程
+ ******************************************************************************
+ */
 
 package controller
 
@@ -27,6 +27,7 @@ type Course struct {
 
 func (cc *CourseController) GetCourse(ctx iris.Context) model.ResponseModel {
 	stuno := ctx.URLParam("stuno")
+
 	if stuno == "" {
 		defer fmt.Println("path:/student/course ----> GET ✅")
 
@@ -52,9 +53,15 @@ func (cc *CourseController) GetCourse(ctx iris.Context) model.ResponseModel {
 	defer fmt.Println("path:/student/course ----> GET ✅")
 
 	return model.ResponseModel{
-		Data: course,
-		Code: 1,
-		Msg:  "success",
+		Data:       course,
+		Code:       1,
+		Msg:        "success",
 		TotalCount: 1,
 	}
+}
+
+func (cc *CourseController) OptionsCourse(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "3600")
 }

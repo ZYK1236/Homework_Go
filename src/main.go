@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"iris/src/controller"
@@ -10,11 +11,29 @@ import (
 	logMsg "iris/src/utils"
 )
 
+var mySecret = []byte("secret")
+
+var jwtConfig = jwt.New(jwt.Config{
+	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+		return mySecret, nil
+	},
+
+	Expiration: true,
+
+	SigningMethod: jwt.SigningMethodHS256,
+})
+
 func main() {
 	app := iris.New()
 
 	// 跨域
 	app.Use(Cors)
+
+	// jwt 鉴权
+	app.Use(Jwt)
+
+	// 捕获 404 错误
+	app.OnErrorCode(iris.StatusNotFound, NotFoundHandler)
 
 	// 路由组 /student
 	mvc.Configure(app.Party("/student"), func(a *mvc.Application) {
@@ -35,22 +54,27 @@ func main() {
 		a.Handle(new(controller.RecordController))
 	})
 
-	// 捕获 404 错误
-	app.OnErrorCode(iris.StatusNotFound, notFoundHandler)
+	// 路由组 /login
+	mvc.Configure(app.Party("/login"), func(a *mvc.Application) {
+		a.Handle(new(controller.LoginController))
+	})
 
 	// 初始化数据库
 	database.Init()
+
 	// 初始化 redis
 	redisConfig.Init()
 
-	err := app.Run(iris.Addr(":8080"))
+	// 服务启动
+	err := app.Run(iris.Addr(":8080"), iris.WithConfiguration(iris.Configuration{}))
 	if err != nil {
 		fmt.Println("app.Run error...")
 		return
 	}
 }
 
-func notFoundHandler(ctx iris.Context) {
+func NotFoundHandler(ctx iris.Context) {
+	fmt.Println("not found 404", ctx.Method())
 	logMsg.LogErrorMsg(ctx.Path(), ctx.Method())
 	_, err := ctx.WriteString("404 not found")
 	if err != nil {
@@ -60,31 +84,19 @@ func notFoundHandler(ctx iris.Context) {
 
 func Cors(ctx iris.Context) {
 	ctx.Header("Access-Control-Allow-Origin", "*")
-	if ctx.Request().Method == "OPTIONS" {
-		ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
-		ctx.Header("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization")
-		ctx.StatusCode(204)
-		return
-	}
 	ctx.Next()
 }
 
-// type MyController struct{}
+func Jwt(ctx iris.Context) {
+	if ctx.Path() == "/login" {
+		ctx.Next()
+		return
+	}
 
-// // 自动识别你的 GET 请求
-// func (mc *MyController) Get() string {
-// 	fmt.Println("get")
-// 	return "get"
-// }
-
-// func (mc *MyController) GetInfo() mvc.Result {
-// 	fmt.Print("getinfo")
-// 	// 返回自定义类型 Object
-// 	// json 格式
-// 	return mvc.Response{
-// 		Object: model.GetModel(true, map[string]interface{}{
-// 			"name": "zyk",
-// 			"age":  18,
-// 		}),
-// 	}
-// }
+	if err := jwtConfig.CheckJWT(ctx); err != nil {
+		jwtConfig.Config.ErrorHandler(ctx, err)
+		return
+	}
+	// 验证 token 通过，放行
+	ctx.Next()
+}

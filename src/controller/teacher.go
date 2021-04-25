@@ -25,7 +25,7 @@ type Teacher struct {
 	TeacherName string `json:"teachername"`
 }
 
-func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
+func (tc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
 	// 数据初始化
 	stuno := ctx.URLParam("stuno")
 	path := ctx.Path()
@@ -59,4 +59,10 @@ func (cc *TeacherController) GetTeacher(ctx iris.Context) model.ResponseModel {
 		Msg:        "success",
 		TotalCount: 1,
 	}
+}
+
+func (tc *TeacherController) OptionsTeacher(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "3600")
 }

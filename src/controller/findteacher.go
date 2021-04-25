@@ -10,6 +10,7 @@ package controller
 
 import (
 	"fmt"
+	"github.com/kataras/iris/v12"
 	"iris/src/database"
 	"iris/src/model"
 )
@@ -42,4 +43,10 @@ func (fc *FindTeacherController) GetTeacher() model.ResponseModel {
 		Msg:        "success",
 		TotalCount: len(result),
 	}
+}
+
+func (fc *FindTeacherController) OptionsTeacher(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "3600")
 }

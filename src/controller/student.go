@@ -33,11 +33,13 @@ type Student struct {
 type StudentController struct{}
 
 func (sc *StudentController) GetMessage(ctx iris.Context) model.ResponseModel {
-	path := ctx.Path()
 	var beginId int
+	var student []Student
 
 	// get query param
+	path := ctx.Path()
 	pageNum := ctx.URLParam("pageNum")
+
 	if pageNum == "" {
 		beginId = 1
 	} else {
@@ -46,7 +48,6 @@ func (sc *StudentController) GetMessage(ctx iris.Context) model.ResponseModel {
 	}
 
 	// defined sql
-	var student []Student
 	count := 0
 	selectSql := "select * from student where id>? and id<=?"
 	countSql := "select count(*) from student"
@@ -74,4 +75,10 @@ func (sc *StudentController) GetMessage(ctx iris.Context) model.ResponseModel {
 	}
 
 	return result
+}
+
+func (sc *StudentController) OptionsMessage(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "3600")
 }

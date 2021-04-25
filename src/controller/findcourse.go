@@ -1,10 +1,10 @@
 /**
-  ******************************************************************************
-  * File Name          : 查询所有课程 Controller
-  * Author             : 张宇恺
-  * Description        : 查表，给出表中所有课程 id 以及名字
-  ******************************************************************************
-*/
+ ******************************************************************************
+ * File Name          : 查询所有课程 Controller
+ * Author             : 张宇恺
+ * Description        : 查表，给出表中所有课程 id 以及名字
+ ******************************************************************************
+ */
 
 package controller
 
@@ -41,4 +41,10 @@ func (fc *FindCourseController) GetCourse(ctx iris.Context) model.ResponseModel 
 		Msg:        "success",
 		TotalCount: len(result),
 	}
+}
+
+func (fc *FindCourseController) OptionsCourse(ctx iris.Context) {
+	ctx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS")
+	ctx.Header("Access-Control-Allow-Headers", "Authorization")
+	ctx.Header("Access-Control-Max-Age", "3600")
 }
